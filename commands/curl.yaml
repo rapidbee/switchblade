@@ -1,0 +1,9 @@
+curl:
+  - command: curl $URL -o $FILE
+    details:
+      description: download a file
+      args:
+        - name: URL
+          description: URL to download
+        - name: FILE
+          description: file to save to

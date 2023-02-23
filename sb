@@ -1,0 +1,30 @@
+#!/bin/bash
+# Author: Yonatan Koren (github.com/korenyoni)
+
+SB_COMMANDS_DIR="${SB_COMMANDS_DIR:-$HOME/.sb/commands}"
+
+# Recursively extract all values and filter out only the commands.
+# Prefix each command with the path to the command in the yaml.
+# For example: "foo.0.command: bar -n 100"
+commands=$(awk 1 $SB_COMMANDS_DIR/*.yaml | yq '.. | select(key == "command") | {(path | join(".")): .}' | base64)
+
+# We need to encode the commands in base64 in order to store it as a bash variable.
+# Then, we bind enter to a python script that will paste the selected command into the terminal, without executing it.
+# For more information, see: https://unix.stackexchange.com/a/213821
+#
+# We also disable terminal echo, so that the script does not print the command to stdout (thanks ChatGPT).
+echo $commands | base64 -d | yq '.[]' | fzf --bind "enter:become(python -c \"\"\"
+import fcntl, sys, termios
+del sys.argv[0]
+
+# Disable terminal echo
+tty_attr = termios.tcgetattr(sys.stdin)
+tty_attr[3] &= ~termios.ECHO
+termios.tcsetattr(sys.stdin, termios.TCSANOW, tty_attr)
+
+for c in ' '.join(sys.argv):
+  fcntl.ioctl(sys.stdin, termios.TIOCSTI, c)
+\"\"\" {})" \
+    --prompt "sb> " \
+    --preview "yq -C .\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2).details <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq)" \
+    --preview-label "Details" \

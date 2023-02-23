@@ -1,0 +1,13 @@
+nmap:
+  - command: nmap -sV -sC $RHOST
+    details:
+      description: service and version detection (default port scan)
+      args:
+        - name: RHOST
+          description: remote host
+  - command: nmap -sV -sC -p- $RHOST
+    details:
+      description: service and version detection (all ports)
+      args:
+        - name: RHOST
+          description: remote host
