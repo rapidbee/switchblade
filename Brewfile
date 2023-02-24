@@ -1,5 +1,7 @@
 # base
 brew "yq"
+brew "bat"
+brew "fzf"
 
 # security: base
 brew "nmap"

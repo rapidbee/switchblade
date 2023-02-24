@@ -35,6 +35,9 @@ export FZF_DEFAULT_OPTS='--color=bg+:#3B4252,bg:#2E3440,spinner:#81A1C1,hl:#616E
 # - decode it from base64
 # - change the delimiter to a tab (See: https://github.com/junegunn/fzf/issues/1792#issuecomment-566931835)
 # - color each column using awk
+#
+# We also substitute the command arguments with the values of the environment variables, in the output in the preview window.
+# This is not substituted in the final command. 
 echo $commands_search | base64 -d | yq '.[]' | awk -v FS='\␞' -v OFS='\␞' "{ printf(\"$awk_print_command\", \$1, \$2) }" | column -s␞ -t | fzf --bind "enter:become(python -c \"\"\"
 import fcntl, sys, termios
 del sys.argv[0]
@@ -51,6 +54,6 @@ for c in ' '.join(sys.argv):
     --border \
     --delimiter '\t' \
     --prompt "sb> " \
-    --preview "yq \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2)\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq) | bat --color always --theme $bat_theme -ppl YAML" \
+    --preview "yq \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2)\" <(awk 1 $SB_COMMANDS_DIR/*.yaml) | yq '. * {\"args\": (.args | map_values(. + \" (\${\" + key + \"-EMPTY})\" | envsubst))}' | bat --color always --theme $bat_theme -ppl YAML" \
     --preview-label "Command Details" \
     --preview-window "up:50%:wrap" \

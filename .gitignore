@@ -3,3 +3,6 @@ Brewfile.lock.json
 
 # feroxbuster
 ferox-*.state
+
+# Vendor
+vendor/

@@ -11,10 +11,6 @@ nmap:
     description: service and version detection (all ports)
     args:
       RHOST: remote host
-  - command: nmap --top-ports 1000 -sS -Pn $RHOST
-    description: top 1000 ports scan with stealth SYN scan (no ping)
-    args:
-      RHOST: remote host
   - command: nmap -sV -sC -p- -T5 $RHOST
     description: service and version detection (all ports, fast timing template)
     args:
@@ -23,15 +19,20 @@ nmap:
     description: UDP scan
     args:
       RHOST: remote host
-  - command: nmap --script vuln $RHOST
-    description: vulnerability scanning with Nmap NSE scripts
-    args:
-      RHOST: remote host
   - command: sudo nmap -O --fuzzy $RHOST
     description: OS detection (fuzzy, requires root)
     args:
       RHOST: remote host
   - command: sudo nmap --fuzzy -A $RHOST
-    description: aggressive scan (fuzzy OS detection, version detection, traceroute, script scanning, and more, requires root)
+    description: aggressive scan (fuzzy OS detection, version detection, traceroute, script scanning requires root)
     args:
       RHOST: remote host
+  - command: nmap -sV --script ~/.sb/vendor/nmap-vulners/vulners.nse $RHOST
+    description: scan for known vulnerabilities using nmap-vulners
+    args:
+      RHOST: remote host
+  - command: nmap -sV --script ~/.sb/vendor/nmap-vulners/vulners.nse $RHOST -p $RPORTS
+    description: scan for known vulnerabilities using nmap-vulners (specific ports)
+    args:
+      RHOST: remote host
+      RPORTS: ports to scan
