@@ -5,4 +5,20 @@ git:
     description: pull from origin (current branch)
   - command: git push origin $(git rev-parse --abbrev-ref HEAD)
     description: push to origin (current branch)
-  
+  - command: git log --author="$AUTHOR" --after="$DATE"
+    description: show commit log for an author after a specific date
+    args:
+      AUTHOR: author name
+      DATE: date in ISO 8601 format (e.g. 2022-02-23)
+  - command: git diff --name-only HEAD~1 HEAD
+    description: show changed files in the last commit
+  - command: git branch -vv
+    description: show local branches with their upstream branches and their last commit messages
+  - command: git remote add upstream $UPSTREAM_REPO
+    description: add an upstream remote repository
+    args:
+      UPSTREAM_REPO: URL of the upstream repository
+  - command: git fetch upstream
+    description: fetch changes from upstream remote repository
+  - command: git merge upstream/main
+    description: merge changes from upstream remote repository (assuming main branch)
