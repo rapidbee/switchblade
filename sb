@@ -27,10 +27,10 @@ termios.tcsetattr(sys.stdin, termios.TCSANOW, tty_attr)
 
 for c in ' '.join(sys.argv):
   fcntl.ioctl(sys.stdin, termios.TIOCSTI, c)
-\"\"\" {1})" \
+\"\"\" \$(yq -C \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2).command\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq)))" \
     --ansi \
     --delimiter '\t' \
     --prompt "sb> " \
     --preview "yq -C \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2)\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq)" \
-    --preview-label "Details" \
+    --preview-label "Command Details" \
     --preview-window "up:50%:wrap" \
