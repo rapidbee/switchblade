@@ -1,6 +1,6 @@
 nmap:
-  - command: sudo nmap -O --fuzzy $RHOST
-    description: OS fingerprinting (fuzzy, requires root)
+  - command: nmap -sS -Pn $RHOST
+    description: stealth SYN scan (no ping)
     args:
       RHOST: remote host
   - command: nmap -sV -sC $RHOST
@@ -11,27 +11,27 @@ nmap:
     description: service and version detection (all ports)
     args:
       RHOST: remote host
+  - command: nmap --top-ports 1000 -sS -Pn $RHOST
+    description: top 1000 ports scan with stealth SYN scan (no ping)
+    args:
+      RHOST: remote host
   - command: nmap -sV -sC -p- -T5 $RHOST
     description: service and version detection (all ports, fast timing template)
-    args:
-      RHOST: remote host
-  - command: nmap -sS -Pn $RHOST
-    description: stealth SYN scan (no ping)
-    args:
-      RHOST: remote host
-  - command: nmap -A $RHOST
-    description: aggressive scan (OS detection, version detection, traceroute, script scanning, and more)
-    args:
-      RHOST: remote host
-  - command: nmap --script vuln $RHOST
-    description: vulnerability scanning with Nmap NSE scripts
     args:
       RHOST: remote host
   - command: nmap -sU $RHOST
     description: UDP scan
     args:
       RHOST: remote host
-  - command: nmap --top-ports 1000 -sS -Pn $RHOST
-    description: top 1000 ports scan with stealth SYN scan (no ping)
+  - command: nmap --script vuln $RHOST
+    description: vulnerability scanning with Nmap NSE scripts
+    args:
+      RHOST: remote host
+  - command: sudo nmap -O --fuzzy $RHOST
+    description: OS detection (fuzzy, requires root)
+    args:
+      RHOST: remote host
+  - command: sudo nmap --fuzzy -A $RHOST
+    description: aggressive scan (fuzzy OS detection, version detection, traceroute, script scanning, and more, requires root)
     args:
       RHOST: remote host
