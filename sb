@@ -16,7 +16,7 @@ commands_search=$(awk 1 $SB_COMMANDS_DIR/*.yaml | yq '.. | select(key == "comman
 #
 # We also disable terminal echo, so that the script does not print the command to stdout (thanks ChatGPT).
 # Before we pass the YAML to fzf, we decode it from base64, and also change the delimiter to a tab (see: https://github.com/junegunn/fzf/issues/1792#issuecomment-566931835)
-echo $commands_search | base64 -d | yq '.[]' | tr ':' '\t' | fzf --bind "enter:become(python -c \"\"\"
+echo $commands_search | base64 -d | yq '.[]' | column -s: -t | fzf --bind "enter:become(python -c \"\"\"
 import fcntl, sys, termios
 del sys.argv[0]
 
@@ -28,7 +28,9 @@ termios.tcsetattr(sys.stdin, termios.TCSANOW, tty_attr)
 for c in ' '.join(sys.argv):
   fcntl.ioctl(sys.stdin, termios.TIOCSTI, c)
 \"\"\" {1})" \
+    --ansi \
     --delimiter '\t' \
     --prompt "sb> " \
     --preview "yq -C \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2)\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq)" \
     --preview-label "Details" \
+    --preview-window "up:50%:wrap" \
