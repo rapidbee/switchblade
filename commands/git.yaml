@@ -1,4 +1,6 @@
 git:
+  - command: git commit --allow-empty -m "Empty commit"
+    description: empty commit
   - command: git pull origin $(git rev-parse --abbrev-ref HEAD)
     description: pull from origin (current branch)
   - command: git push origin $(git rev-parse --abbrev-ref HEAD)

@@ -1,9 +1,17 @@
 nmap:
+  - command: sudo nmap -O --fuzzy $RHOST
+    description: OS fingerprinting (fuzzy, requires root)
+    args:
+      RHOST: remote host
   - command: nmap -sV -sC $RHOST
     description: service and version detection (default port scan)
     args:
       RHOST: remote host
   - command: nmap -sV -sC -p- $RHOST
     description: service and version detection (all ports)
+    args:
+      RHOST: remote host
+  - command: nmap -sV -sC -p- -T5 $RHOST
+    description: service and version detection (all ports, fast timing template)
     args:
       RHOST: remote host
