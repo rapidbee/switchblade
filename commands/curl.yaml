@@ -1,6 +1,6 @@
 curl:
   - command: curl $RHOST -o $FILE
-    description: download a file
+    description: download a file to a specific location
     args:
       RHOST: host to download from
       FILE: file to save to
@@ -12,7 +12,7 @@ curl:
     description: follow redirects
     args:
       RHOST: URL to request
-  - command: curl -d "$POST_DATA" -H 'Content-Type: application/json" $RHOST
+  - command: 'curl -d "$POST_DATA" -H "Content-Type: application/json" $RHOST'
     description: send POST data as JSON
     args:
       POST_DATA: JSON data to send
