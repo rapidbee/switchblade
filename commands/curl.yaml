@@ -4,3 +4,36 @@ curl:
     args:
       RHOST: host to download from
       FILE: file to save to
+  - command: curl -i $RHOST
+    description: show response headers
+    args:
+      RHOST: URL to request
+  - command: curl -L $RHOST
+    description: follow redirects
+    args:
+      RHOST: URL to request
+  - command: curl -d "$POST_DATA" -H 'Content-Type: application/json" $RHOST
+    description: send POST data as JSON
+    args:
+      POST_DATA: JSON data to send
+      RHOST: URL to request
+  - command: curl --upload-file $FILE $RHOST
+    description: upload a file
+    args:
+      FILE: file to upload
+      RHOST: URL to upload to
+  - command: curl -X PUT -d "$DATA" $RHOST
+    description: send PUT data
+    args:
+      DATA: data to send
+      RHOST: URL to request
+  - command: curl -k $RHOST
+    description: ignore SSL errors
+    args:
+      RHOST: URL to request
+  - command: curl -u $USERNAME:$PASSWORD $RHOST
+    description: send basic authentication credentials
+    args:
+      USERNAME: username to authenticate with
+      PASSWORD: password to authenticate with
+      RHOST: URL to request
