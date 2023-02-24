@@ -5,18 +5,37 @@ SB_COMMANDS_DIR="${SB_COMMANDS_DIR:-$HOME/.sb/commands}"
 
 # Recursively extract all values and filter out only the commands.
 # Prefix each command with the path to the command in the yaml.
-# For example: "foo.0.command: bar -n 100 ()"
+# We need to encode the yq output in base64 in order to store it as a bash variable.
+# For example: "foo.0.command: bar -n 100"
 commands=$(awk 1 $SB_COMMANDS_DIR/*.yaml | yq '.. | select(key == "command") | {(path | join(".")): .}' | base64)
-# We also need to build a YAML with both the commands and their descriptions. This is what is actually passed to fzf (with a delimiter).
+# We also need to build a YAML with both the commands and their descriptions. This is what is actually passed to fzf (with a special delimiter).
+# For example: "foo.0.command: bar -n 100<delimeter>description of foo"
 commands_search=$(awk 1 $SB_COMMANDS_DIR/*.yaml | yq '.. | select(key == "command") | {(parent | path | join(".")): . + "␞" + (. | parent | .description)}' | base64)
 
-# We need to encode the commands in base64 in order to store it as a bash variable.
-# Then, we bind enter to a python script that will paste the selected command into the terminal, without executing it.
+# Appearance
+## Preview window (bat)
+# Use bat --list-themes to see all available themes
+bat_theme="'Solarized (dark)'"
+
+## Column Colors
+left_column_ansi_color="\033[38;2;247;202;201m" # https://www.color-hex.com/color/f7cac9
+right_column_ansi_color="\033[38;2;171;177;207m" # https://www.color-hex.com/color/abb1cf
+awk_print_command="$left_column_ansi_color%s␞$right_column_ansi_color%s\n"
+
+## FZF Colors
+# https://github.com/junegunn/fzf/blob/master/ADVANCED.md#color-themes
+# arcticicestudio/nord-vim
+export FZF_DEFAULT_OPTS='--color=bg+:#3B4252,bg:#2E3440,spinner:#81A1C1,hl:#616E88,fg:#D8DEE9,header:#616E88,info:#81A1C1,pointer:#81A1C1,marker:#81A1C1,fg+:#D8DEE9,prompt:#81A1C1,hl+:#81A1C1'
+
+# We bind enter to a python script that will paste the selected command into the terminal, without executing it.
 # For more information, see: https://unix.stackexchange.com/a/213821
 #
 # We also disable terminal echo, so that the script does not print the command to stdout (thanks ChatGPT).
-# Before we pass the YAML to fzf, we decode it from base64, and also change the delimiter to a tab (see: https://github.com/junegunn/fzf/issues/1792#issuecomment-566931835)
-echo $commands_search | base64 -d | yq '.[]' | column -s␞ -t | fzf --bind "enter:become(python -c \"\"\"
+# Before we pass the YAML to fzf, we do the following:
+# - decode it from base64
+# - change the delimiter to a tab (See: https://github.com/junegunn/fzf/issues/1792#issuecomment-566931835)
+# - color each column using awk
+echo $commands_search | base64 -d | yq '.[]' | awk -v FS='\␞' -v OFS='\␞' "{ printf(\"$awk_print_command\", \$1, \$2) }" | column -s␞ -t | fzf --bind "enter:become(python -c \"\"\"
 import fcntl, sys, termios
 del sys.argv[0]
 
@@ -29,8 +48,9 @@ for c in ' '.join(sys.argv):
   fcntl.ioctl(sys.stdin, termios.TIOCSTI, c)
 \"\"\" \$(yq -C \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2).command\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq)))" \
     --ansi \
+    --border \
     --delimiter '\t' \
     --prompt "sb> " \
-    --preview "yq -C \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2)\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq)" \
+    --preview "yq \".\$(echo $commands | base64 -d | awk 'NR-1=={n}' | cut -d . -f -2)\" <(awk 1 $SB_COMMANDS_DIR/*.yaml | yq) | bat --color always --theme $bat_theme -ppl YAML" \
     --preview-label "Command Details" \
     --preview-window "up:50%:wrap" \
