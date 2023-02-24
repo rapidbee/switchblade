@@ -15,3 +15,23 @@ nmap:
     description: service and version detection (all ports, fast timing template)
     args:
       RHOST: remote host
+  - command: nmap -sS -Pn $RHOST
+    description: stealth SYN scan (no ping)
+    args:
+      RHOST: remote host
+  - command: nmap -A $RHOST
+    description: aggressive scan (OS detection, version detection, traceroute, script scanning, and more)
+    args:
+      RHOST: remote host
+  - command: nmap --script vuln $RHOST
+    description: vulnerability scanning with Nmap NSE scripts
+    args:
+      RHOST: remote host
+  - command: nmap -sU $RHOST
+    description: UDP scan
+    args:
+      RHOST: remote host
+  - command: nmap --top-ports 1000 -sS -Pn $RHOST
+    description: top 1000 ports scan with stealth SYN scan (no ping)
+    args:
+      RHOST: remote host
