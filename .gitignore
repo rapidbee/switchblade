@@ -1,2 +1,5 @@
 # Brewfile
 Brewfile.lock.json
+
+# feroxbuster
+ferox-*.state

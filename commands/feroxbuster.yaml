@@ -1,0 +1,6 @@
+feroxbuster:
+  - command: feroxbuster -u $RHOST -w $WORDLIST
+    description: directory discovery
+    args:
+      RHOST: remote host
+      WORDLIST: wordlist to use

@@ -1,0 +1,6 @@
+git:
+  - command: git pull origin $(git rev-parse --abbrev-ref HEAD)
+    description: pull from origin (current branch)
+  - command: git push origin $(git rev-parse --abbrev-ref HEAD)
+    description: push to origin (current branch)
+  
