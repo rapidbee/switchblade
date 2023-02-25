@@ -1,0 +1,6 @@
+nuclei:
+  - command: nuclei -u $RHOST -t $TEMPLATES
+    description: scan a host using a template
+    args:
+      RHOST: remote host
+      TEMPLATES: path to template(s) to use

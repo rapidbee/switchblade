@@ -9,6 +9,7 @@ clean:
 vendor: clean
 	@echo "Installing additional dependencies..."
 	git clone https://github.com/vulnersCom/nmap-vulners.git $(shell pwd)/vendor/nmap-vulners
+	git clone https://github.com/projectdiscovery/nuclei-templates  $(shell pwd)/vendor/nuclei-templates
 
 install: vendor
 	@echo "Intalling sb..."

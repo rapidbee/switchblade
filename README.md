@@ -1,4 +1,4 @@
-# Switchblade
+# Switchblade 🗡
 
 Tool for saving, finding and executing commands quickly (built using [fzf](https://github.com/junegunn/fzf)).
 
